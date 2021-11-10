@@ -33,9 +33,11 @@ def disambiguate(sentence, algorithm=simple_lesk,
     # Pre-lemmatize the sentnece before WSD
     if not context_is_lemmatized:
         surface_words, lemmas, morphy_poss = lemmatize_sentence(sentence, keepWordPOS=True, tokenizer=tokenizer)
-        lemma_sentence = " ".join(lemmas)
     else:
-        lemma_sentence = sentence # TODO: Miss out on POS specification, how to resolve?
+        surface_words, lemmas, morphy_poss = zip(*sentence)
+    
+    lemma_sentence = " ".join(lemmas)        
+        
     for word, lemma, pos in zip(surface_words, lemmas, morphy_poss):
         if lemma not in stopwords: # Checks if it is a content word
             if wn.synsets(lemma):
@@ -62,3 +64,9 @@ def disambiguate(sentence, algorithm=simple_lesk,
         tagged_sentence = [(word, lemma, None) if str(tag).startswith('#')
                            else (word, lemma, tag) for word, lemma, tag in tagged_sentence]
     return tagged_sentence
+
+
+if __name__ == "__main__":
+    sentence = "Milu is a good cat!"
+    test = disambiguate(sentence, context_is_lemmatized=False)
+    print(test)
